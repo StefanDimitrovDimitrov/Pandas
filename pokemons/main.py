@@ -1,4 +1,5 @@
 import pandas as pd
+from openpyxl.workbook import Workbook
 
 # 1. load data
 df = pd.read_csv('pokemon_data.csv')
@@ -67,4 +68,57 @@ def move_column(df):
     return df.iloc[:, 1:7].head(5)
 
 
-print(move_column(df))
+df['Total'] = df.iloc[:, 4:10].sum(axis=1)
+cols = list(df.columns)
+df = df[cols[0:4] + [cols[-1]] + cols[4:12]]
+"""
+
+SAVE DATA
+
+"""
+
+
+# save to csv, excel, txt
+
+def save_modified_file(df):
+    df.to_csv('modified.csv', index=False)
+    df.to_excel('modified.xlsx', index=False)
+    df.to_csv('modified.txt', index=False, sep='\t')
+
+
+"""
+
+FILTERING DATA : & , |, >, <, ~, contain
+
+"""
+
+# one condition
+
+# df = df.loc[df['Type 1'] == "Grass"]
+
+# two conditions we have to use () for each condition and use & sign or | for OR
+df = df.loc[(df['Type 1'] == "Grass") & (df['Type 2'] == 'Poison')]
+
+# three
+df = df.loc[(df['Type 1'] == "Grass") & (df['Type 2'] == 'Poison') & (df["HP"] > 70)]
+
+# reset old index
+
+df = df.reset_index(drop=True)
+
+# or reset in place
+
+df.reset_index(drop=True, inplace=True)
+
+# string contain another string
+
+df = df.loc[df['Name'].str.contains('Mega')]
+
+# string do not contain another string we can pass regex expresion
+
+df = df.loc[~df['Name'].str.contains('Mega')]
+
+# filtering using Regex: flags re.I - for lower cases
+import re
+df = df.loc[df['Type 1'].str.contains('fire|grass', flags=re.I, regex=True)]
+df = df.loc[df['Name'].str.contains('^pi[a-z]*', flags=re.I, regex=True)]
