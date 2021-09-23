@@ -289,3 +289,49 @@ df = pd.read_csv('path to file', na_values = na_vals)
 
 df['column'].unique()
     - gives unique vlues
+
+    [] reading different file_extentin
+
+        [] EXCEL
+
+        pip install xlwt openpyxl xlrd
+
+
+data_df.to_excel('file.xlsx')
+    - export in excel
+
+df_excel = pd.raed_excel('file.xlsx', index_col="Respondent")
+
+        [] JSON
+
+test_df.to_json('file.json')
+    - craate json 
+
+test_df.to_json('file.json', orient='record', lines=True)
+    - craate json with response on different rows
+
+test = pd.read_json('file.json', orient='record', lines=True)
+
+
+        [] SQL
+    pip install SQLAlchemy
+    pip install psycopg2
+
+from sqlalchemy import create_engine
+import psycopg2
+
+engine = create_engine('postgresql:://usernam:pass:5432/test_db')
+df.to_sql('sample_table', engine, if_exists='replace')
+    - we have also if_exists=append to add more and more to the existing table
+
+
+sql_df = pd.read_sql('name_table', engine, index_col='Respondent')
+
+
+sql_df = pd.read_sql_query(SELECT * FROM sample_table, engine, index_col='Respondent')
+
+
+    [] URL
+
+
+posts_df = pd.read_json('url')
