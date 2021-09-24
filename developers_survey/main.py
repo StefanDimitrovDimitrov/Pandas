@@ -98,6 +98,43 @@ def sort_df_two(df):
     # df.nsmallest(10, 'salary')
 
     return df
+
+def group_by_example(df):
+
+    country_grp = df.groupby(['Country'])
+    country_grp.get_group('United States')
+    country_grp['ConvertedComp'].value_counts().loc['United States']
+    country_grp['ConvertedComp'].median()
+    return country_grp['ConvertedComp'].agg(['median', 'mean'])
+
+
+def FILTER_people_use_Python_in_Bulgaria(df):
+    filt = df['Country'] == "Bulgaria"
+    return df.loc[filt]['LanguageWorkedWith'].str.contains('Python').sum()
+
+
+def GROUPBY_people_use_Python_in_every_country(df):
+    country_grp = df.groupby(['Country'])
+    return country_grp['LanguageWorkedWith'].apply(lambda x: x.str.contains('Python').sum())
+
+"""
+
+WHAT % of people from each country know Python ?
+
+"""
+
+def python_people_per_country_in_percentage(df):
+    country_grp = df.groupby(['Country'])
+    country_respondents = df['Country'].value_counts()
+    country_uses_python = country_grp['LanguageWorkedWith'].apply(lambda x: x.str.contains('Python').sum())
+    python_df = pd.concat([country_respondents, country_uses_python], axis="columns", sort=False)
+    python_df.rename(columns={'Country': 'Respondents','LanguageWorkedWith':'Python_Developers'}, inplace=True)
+    python_df['PctKnowPython'] = (python_df['Python_Developers']/python_df['Respondents']) * 100
+    python_df.sort_values(by="Python_Developers", ascending=False, inplace=True)
+    python_df.to_csv('python_dev_per_country.csv', index=True)
+    return python_df.head(10)
+
+
 # print(head_csv(df))
 # print(tail_csv(df))
 # print(shape_csv(df))
@@ -115,4 +152,10 @@ def sort_df_two(df):
 # print(change_name_column(df))
 # print(column_csv(df))
 # print(sort_df(df))
-print(sort_df_two(df))
+# print(sort_df_two(df))
+# print(group_by_example(df))
+
+# print(FILTER_people_use_Python_in_Bulgaria(df))
+# print(GROUPBY_people_use_Python_in_every_country(df))
+
+print(python_people_per_country_in_percentage(df))
