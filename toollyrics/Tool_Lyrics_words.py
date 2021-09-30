@@ -1,34 +1,51 @@
 import pandas as pd
 
-first_album = 'ToolLyrics_Opiate.txt'
-last_album = 'ToolLyrics_Fear_Inoculum.txt'
+first = 'Opiate.txt'
+second = 'Undertow.txt'
+third = 'Aenima.txt'
+fourth = 'Lateralus.txt'
+fifth = '10000_days.txt'
+sixth = 'Fear_Inoculum.txt'
 
-df = pd.read_csv('ToolLyrics_Fear_Inoculum.txt', sep=";", header=None, encoding='cp1252')
+list_endpoints = [first, second, third, fourth, fifth, sixth]
 
-list_words = []
-df.columns = ['Column']
+for endpoint in list_endpoints:
 
-for row in df['Column']:
-    content = row.split()
-    for word in content:
-        word = word.replace(".", "")
-        word = word.replace(",", "")
-        word = word.replace("!", "")
-        word = word.replace("?", "")
-        list_words.append(word)
+    df = pd.read_csv(endpoint, sep='delimiter', header=None, encoding='cp1252')
 
-dict = {}
+    list_words = []
+    df.columns = ['Column']
 
-for word in list_words:
-    if word not in dict:
-        dict[word] = 0
-    dict[word] += 1
+    for row in df['Column']:
+        content = row.split()
+        for word in content:
+            word = word.replace(".", "")
+            word = word.replace(",", "")
+            word = word.replace("!", "")
+            word = word.replace("?", "")
+            word = word.replace("(", "")
+            word = word.replace(")", "")
+            word = word.replace(";", "")
+            word = word.replace('"', "")
+            word = word.replace('".', "")
+            word = word.replace('",', "")
+            word = word.replace(":", "")
+            list_words.append(word.lower())
 
-dict = {k: v for k, v in sorted(dict.items(), key=lambda item: item[1], reverse=True)}
+    dict = {}
 
-new_df = pd.DataFrame.from_dict(dict, orient='index')
-print(new_df.shape)
-new_df.to_csv('20_most_frequently_words_in_album_Fear_Inoculum')
+    for word in list_words:
+        if word not in dict:
+            dict[word] = 0
+        dict[word] += 1
 
-# for k, v in dict.items():
-#     print(f"{k} - {v}")
+    dict = {k: v for k, v in sorted(dict.items(), key=lambda item: item[1], reverse=True)}
+
+    # new_df = pd.DataFrame.from_dict(dict, orient='index')
+    new_df = pd.DataFrame(dict, index=[0])
+
+    print(f"{endpoint} {new_df.shape}")
+    # print(f"{new_df.iloc[:, :16]}")
+
+    # new_df.to_csv(f"{endpoint}_words")
+
